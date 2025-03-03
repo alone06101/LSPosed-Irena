@@ -64,6 +64,10 @@ jobs:
         with:
           version: 1.12.1
 
+      - name: Remove Android's cmake
+        shell: bash
+        run: rm -rf $ANDROID_HOME/cmake
+
       - name: Configure Gradle properties
         run: |
           echo 'org.gradle.caching=true' >> ~/.gradle/gradle.properties
