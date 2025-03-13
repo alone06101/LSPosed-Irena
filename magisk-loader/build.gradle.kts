@@ -93,7 +93,6 @@ android {
         }
     }
     namespace = "org.lsposed.lspd"
-    ndkVersion = "27.2.12479018"
 }
 abstract class Injected @Inject constructor(val magiskDir: String) {
     @get:Inject
@@ -265,7 +264,7 @@ val pushDaemonNative = task<Exec>("pushDaemonNative") {
     dependsOn(":daemon:assembleDebug")
     doFirst {
         val abi: String = ByteArrayOutputStream().use { outputStream ->
-            exec {
+            project.providers.exec {
                 commandLine(adb, "shell", "getprop", "ro.product.cpu.abi")
                 standardOutput = outputStream
             }
@@ -290,7 +289,7 @@ val pushApk = task<Exec>("pushApk") {
     group = "LSPosed"
     dependsOn(":app:assembleDebug")
     doFirst {
-        exec {
+        project.providers.exec {
             commandLine(adb, "shell", "su", "-c", "rm", "-f", tmpApk)
         }
     }
