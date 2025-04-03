@@ -1119,8 +1119,13 @@ public class ConfigManager {
         return uid == managerUid;
     }
 
-    public boolean isManagerInstalled() {
-        return managerUid != -1;
+    public static boolean isManagerInstalled() {
+        PackageInfo info = null;
+        try {
+            info = PackageService.getPackageInfo(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME, 0, 0);
+        } catch (RemoteException ignored) {
+        }
+        return info != null;
     }
 
     public String getPrefsPath(String packageName, int uid) {

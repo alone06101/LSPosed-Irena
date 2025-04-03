@@ -127,11 +127,11 @@ public class LSPManagerService extends ILSPManagerService.Stub {
     }
 
     private static Intent getManagerIntent() {
-        if (managerIntent != null) return managerIntent;
         try {
+            String managerPackageName = ConfigManager.isManagerInstalled() ? BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME : BuildConfig.MANAGER_INJECTED_PKG_NAME;
             var intent = PackageService.getLaunchIntentForPackage(BuildConfig.MANAGER_INJECTED_PKG_NAME);
             if (intent == null) {
-                var pkgInfo = PackageService.getPackageInfo(BuildConfig.MANAGER_INJECTED_PKG_NAME, PackageManager.GET_ACTIVITIES, 0);
+                var pkgInfo = PackageService.getPackageInfo(managerPackageName, PackageManager.GET_ACTIVITIES, 0);
                 if (pkgInfo != null && pkgInfo.activities != null && pkgInfo.activities.length > 0) {
                     for (var activityInfo : pkgInfo.activities) {
                         if (activityInfo.processName.equals(activityInfo.packageName)) {
@@ -146,7 +146,7 @@ public class LSPManagerService extends ILSPManagerService.Stub {
             if (intent != null) {
                 if (intent.getCategories() != null) intent.getCategories().clear();
                 intent.addCategory("org.lsposed.manager.LAUNCH_MANAGER");
-                intent.setPackage(BuildConfig.MANAGER_INJECTED_PKG_NAME);
+                intent.setPackage(managerPackageName);
                 managerIntent = new Intent(intent);
             }
         } catch (RemoteException e) {
@@ -169,17 +169,18 @@ public class LSPManagerService extends ILSPManagerService.Stub {
 
     @SuppressLint("WrongConstant")
     public static void broadcastIntent(Intent inIntent) {
+        String managerPackageName = ConfigManager.isManagerInstalled() ? BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME : BuildConfig.MANAGER_INJECTED_PKG_NAME;
         var intent = new Intent("org.lsposed.manager.NOTIFICATION");
         intent.putExtra(Intent.EXTRA_INTENT, inIntent);
         intent.addFlags(0x01000000); //Intent.FLAG_RECEIVER_INCLUDE_BACKGROUND
         intent.addFlags(0x00400000); //Intent.FLAG_RECEIVER_FROM_SHELL
-        intent.setPackage(BuildConfig.MANAGER_INJECTED_PKG_NAME);
+        intent.setPackage(managerPackageName);
         try {
             ActivityManagerService.broadcastIntentWithFeature(null, intent,
                     null, null, 0, null, null,
                     null, -1, null, true, false,
                     0);
-            intent.setPackage(BuildConfig.DEFAULT_MANAGER_PACKAGE_NAME);
+            intent.setPackage(managerPackageName);
             ActivityManagerService.broadcastIntentWithFeature(null, intent,
                     null, null, 0, null, null,
                     null, -1, null, true, false,
