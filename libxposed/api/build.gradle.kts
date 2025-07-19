@@ -18,10 +18,12 @@ android {
     }
 
     buildFeatures {
-        androidResources = false
         buildConfig = false
     }
 
+    androidResources {
+        enable = false
+    }
 }
 
 dependencies {

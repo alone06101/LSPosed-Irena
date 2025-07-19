@@ -28,8 +28,11 @@ android {
     namespace = "org.lsposed.lspd.core"
 
     buildFeatures {
-        androidResources = false
         buildConfig = true
+    }
+
+    androidResources {
+        enable = false
     }
 
     defaultConfig {
