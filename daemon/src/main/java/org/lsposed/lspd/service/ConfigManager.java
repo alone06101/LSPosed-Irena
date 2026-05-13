@@ -622,6 +622,7 @@ public class ConfigManager {
             Log.d(TAG, module.getKey() + " " + module.getValue().apkPath);
         }
         cacheScopes();
+        LSPModuleService.sendBindersForRunningModules();
         toClose.forEach(SharedMemory::close);
     }
 
@@ -981,6 +982,7 @@ public class ConfigManager {
         if (changed) {
             // Called by manager, should be async
             updateCaches(false);
+            cacheHandler.post(() -> LSPModuleService.sendBinderForRunningModule(packageName));
             return true;
         } else {
             return false;
