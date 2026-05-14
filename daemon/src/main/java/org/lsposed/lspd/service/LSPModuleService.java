@@ -278,7 +278,7 @@ public class LSPModuleService extends IXposedService.Stub {
             callback.onScopeRequestFailed("Invalid request");
             return;
         }
-        if (ConfigManager.getInstance().scopeRequestBlocked(loadedModule.packageName)) {
+        if (ConfigManager.getInstance().scopeRequestBlocked(loadedModule.packageName, userId)) {
             callback.onScopeRequestFailed("Blocked by user");
         } else {
             LSPNotificationManager.requestModuleScope(loadedModule.packageName, userId, scopePackages, callback);

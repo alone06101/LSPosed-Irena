@@ -191,10 +191,9 @@ public class LSPosedService extends ILSPosedService.Stub {
         intent.putExtra("isXposedModule", isXposedModule);
         LSPManagerService.broadcastIntent(intent);
         if (isXposedModule) {
-            var enabledModules = ConfigManager.getInstance().enabledModules();
             var scope = ConfigManager.getInstance().getModuleScope(packageName);
             boolean systemModule = scope != null && scope.parallelStream().anyMatch(app -> app.packageName.equals("system"));
-            boolean enabled = Arrays.asList(enabledModules).contains(packageName);
+            boolean enabled = ConfigManager.getInstance().isModuleEnabledForUser(packageName, userId);
             if (!(Intent.ACTION_UID_REMOVED.equals(action) || Intent.ACTION_PACKAGE_FULLY_REMOVED.equals(action) || allUsers))
                 LSPNotificationManager.notifyModuleUpdated(packageName, userId, enabled, systemModule);
         }
@@ -289,7 +288,7 @@ public class LSPosedService extends ILSPosedService.Stub {
                 case "deny" -> iCallback.onScopeRequestFailed("User rejected");
                 case "delete" -> iCallback.onScopeRequestFailed("Timeout");
                 case "block" -> {
-                    ConfigManager.getInstance().blockScopeRequest(packageName);
+                    ConfigManager.getInstance().blockScopeRequest(packageName, userId);
                     iCallback.onScopeRequestFailed("Blocked by user");
                 }
             }
